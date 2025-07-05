@@ -9,12 +9,9 @@ import {
   Activity,
   Globe,
   Database,
-  Flag,
   HelpCircle,
-  BarChart3,
   GitBranch,
   Home,
-  Layers,
 } from "lucide-react";
 import { NavLink } from "react-router-dom";
 
@@ -32,51 +29,56 @@ function Navbar() {
   ];
 
   return (
-    <div className="bg-white border-b border-gray-200 shadow-sm z-50">
+    <header className="bg-white border-b border-gray-200 shadow-sm z-50">
       {/* Top bar */}
-      <div className="px-6 lg:px-8">
-        <div className="flex justify-between items-center h-16">
-          {/* Left: Logo and Info */}
-          <div className="flex items-center space-x-4">
+      <div className="px-4 sm:px-6 lg:px-8">
+        <div className="flex justify-between items-center h-16 flex-wrap gap-4 sm:gap-0">
+          {/* Logo + Info */}
+          <div className="flex items-center space-x-3">
             <div className="w-10 h-10 bg-black rounded-lg flex items-center justify-center text-white">
               <Zap className="w-5 h-5" />
             </div>
-            <div>
-              <h1 className="text-lg font-semibold text-gray-900">
+            <div className="">
+              <h1 className="text-base sm:text-lg font-semibold text-gray-900">
                 arbaz kayamkhani's projects
               </h1>
               <div className="flex items-center space-x-2 mt-0.5">
                 <span className="text-xs px-2 py-1 rounded-full bg-gray-100 border border-gray-200 text-gray-800">
                   Hobby
                 </span>
-                <span className="text-xs text-gray-500">12 deployments</span>
+                <span className="text-xs text-gray-500 hidden sm:inline">
+                  12 deployments
+                </span>
               </div>
             </div>
           </div>
 
-          {/* Right: Search and Actions */}
-          <div className="flex items-center space-x-4">
+          {/* Search and Actions */}
+          <div className="flex items-center space-x-3 sm:space-x-4 flex-wrap justify-end">
             {/* Search */}
-            <div className="relative">
+            <div className="relative hidden md:block">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
               <input
                 type="text"
-                placeholder="Search projects, deployments..."
-                className="w-80 pl-10 pr-12 py-2 bg-white border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
+                placeholder="Search..."
+                className="w-64 pl-10 pr-12 py-2 bg-white border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-black"
                 onFocus={() => setSearchFocused(true)}
                 onBlur={() => setSearchFocused(false)}
               />
               <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
                 <kbd className="bg-gray-100 text-gray-500 px-1.5 py-0.5 rounded text-xs border border-gray-200">
-                  <Command className="w-2.5 h-2.5 inline mr-0.5" />K
+                  <Command className="w-2.5 h-2.5 inline mr-0.5" />
+                  K
                 </kbd>
               </div>
             </div>
 
-            {/* Feedback / Notification / Profile */}
-            <button className="px-3 py-1.5 text-sm text-gray-700 hover:text-black hover:bg-gray-100 rounded-lg transition">
+            {/* Feedback Button */}
+            <button className="px-2 sm:px-3 py-1.5 text-sm text-gray-700 hover:text-black hover:bg-gray-100 rounded-lg transition hidden sm:block">
               Feedback
             </button>
+
+            {/* Notifications */}
             <div className="relative">
               <button
                 aria-label="Notifications"
@@ -88,6 +90,8 @@ function Navbar() {
                 </span>
               </button>
             </div>
+
+            {/* User Avatar */}
             <div className="w-8 h-8 bg-black rounded-full flex items-center justify-center">
               <User className="w-4 h-4 text-white" />
             </div>
@@ -95,16 +99,17 @@ function Navbar() {
         </div>
       </div>
 
-      {/* Bottom Navigation */}
-      <div className="bg-white border-t py-1 border-gray-200">
-        <div className="flex flex-row items-center justify-center px-6 lg:px-8">
-          <nav className="flex space-x-1 overflow-x-auto">
+      {/* Navigation Menu */}
+      <nav className="bg-white border-t border-gray-200 py-1">
+        <div className="flex flex-row items-center justify-center px-2 sm:px-6 lg:px-8">
+          <div className="flex overflow-x-auto gap-1 w-full sm:w-auto scrollbar-hide">
             {navItems.map(({ name, icon: Icon, link }) => (
               <NavLink
                 key={name}
                 to={link}
+                end={link === "/dashboard"}
                 className={({ isActive }) =>
-                  `group flex items-center space-x-2 px-4 py-3 text-sm font-medium rounded-lg transition ${
+                  `flex-shrink-0 group flex items-center space-x-2 px-4 py-2 text-sm font-medium rounded-lg transition whitespace-nowrap ${
                     isActive
                       ? "text-black bg-gray-100"
                       : "text-gray-600 hover:text-black hover:bg-gray-50"
@@ -115,10 +120,10 @@ function Navbar() {
                 <span>{name}</span>
               </NavLink>
             ))}
-          </nav>
+          </div>
         </div>
-      </div>
-    </div>
+      </nav>
+    </header>
   );
 }
 

@@ -5,9 +5,13 @@ import Navbar from "../components/HeaderFooter/Navbar";
 
 function DashboardLayout() {
   return (
-    <div>
+    <div className="flex flex-col min-h-screen overflow-hidden">
       <Navbar />
-      <Outlet />
+
+      <main className="flex-1 overflow-hidden">
+        <Outlet />
+      </main>
+
       <Footer />
     </div>
   );
