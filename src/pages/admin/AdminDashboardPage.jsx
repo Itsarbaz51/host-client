@@ -3,20 +3,33 @@ import {
   Search,
   Plus,
   Filter,
-  Grid,
-  List,
-  MoreVertical,
-  Bell,
-  Settings,
-  User,
   TrendingUp,
   Activity,
   Clock,
   Globe,
 } from "lucide-react";
+
 import ProjectCard from "../../components/Ui/ProjectCard";
 import UsageStats from "../../components/Ui/UsageStats";
 import RecentPreviews from "../../components/Ui/RecentPreviews";
+
+const StatsCard = ({ stat }) => {
+  const Icon = stat.icon;
+  return (
+    <div className="bg-white rounded-xl border border-gray-200 p-6 hover:shadow-md transition-shadow">
+      <div className="flex items-center justify-between">
+        <div>
+          <p className="text-sm font-medium text-gray-600">{stat.label}</p>
+          <p className="text-2xl font-bold text-gray-900 mt-1">{stat.value}</p>
+          <p className={`text-sm ${stat.color} mt-1`}>{stat.change}</p>
+        </div>
+        <div className="p-3 rounded-lg bg-gray-50">
+          <Icon size={24} className="text-gray-600" />
+        </div>
+      </div>
+    </div>
+  );
+};
 
 const AdminDashboardPage = () => {
   const [searchTerm, setSearchTerm] = useState("");
@@ -98,33 +111,15 @@ const AdminDashboardPage = () => {
     return matchesSearch && matchesFilter;
   });
 
-  const StatsCard = ({ stat }) => {
-    const Icon = stat.icon;
-    return (
-      <div className="bg-white rounded-xl border border-gray-200 p-6 hover:shadow-md transition-shadow">
-        <div className="flex items-center justify-between">
-          <div>
-            <p className="text-sm font-medium text-gray-600">{stat.label}</p>
-            <p className="text-2xl font-bold text-gray-900 mt-1">
-              {stat.value}
-            </p>
-            <p className={`text-sm ${stat.color} mt-1`}>{stat.change}</p>
-          </div>
-          <div className={`p-3 rounded-lg bg-gray-50`}>
-            <Icon size={24} className="text-gray-600" />
-          </div>
-        </div>
-      </div>
-    );
-  };
-
   return (
-    <div className="min-h-screen bg-gray-50 p-4 sm:p-6 md:p-8">
-      {/* Controls */}
-      <div className="bg-white rounded-xl border border-gray-200 p-6 mb-8">
+    <div className="min-h-screen bg-gray-50 rounded-2xl p-4 sm:p-6 md:p-8">
+      {/* Header Controls */}
+      <div className="bg-white rounded-xl border border-gray-200 p-4 sm:p-6 mb-8">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-          <div className="flex items-center gap-4">
-            <div className="relative">
+          {/* Search and Filter - Stack on mobile */}
+          <div className="flex flex-col sm:flex-row sm:items-center gap-4 flex-1 w-full">
+            {/* Search Input */}
+            <div className="relative w-full sm:w-auto sm:flex-1">
               <Search
                 size={20}
                 className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
@@ -134,14 +129,15 @@ const AdminDashboardPage = () => {
                 placeholder="Search projects..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full sm:w-80 pl-10 pr-4 py-2 border border-gray-300 rounded-lg bg-white text-sm focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
+                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg bg-white text-sm focus:outline-none focus:ring-2 focus:ring-black"
               />
             </div>
 
+            {/* Filter Dropdown */}
             <select
               value={filterStatus}
               onChange={(e) => setFilterStatus(e.target.value)}
-              className="px-3 py-2 border border-gray-300 rounded-lg bg-white text-sm focus:outline-none focus:ring-2 focus:ring-black"
+              className="w-full sm:w-auto px-3 py-2 border border-gray-300 rounded-lg bg-white text-sm focus:outline-none focus:ring-2 focus:ring-black"
             >
               <option value="all">All Status</option>
               <option value="done">Done</option>
@@ -149,12 +145,11 @@ const AdminDashboardPage = () => {
             </select>
           </div>
 
-          <div className="flex items-center gap-2">
-            <button className="inline-flex items-center gap-2 rounded-lg bg-black px-4 py-2 text-sm font-medium text-white hover:bg-gray-800 transition-colors shadow-sm">
-              <Plus size={16} />
-              New Project
-            </button>
-          </div>
+          {/* New Project Button */}
+          <button className="w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-lg bg-black px-4 py-2 text-sm font-medium text-white hover:bg-gray-800 transition-colors shadow-sm">
+            <Plus size={16} />
+            New Project
+          </button>
         </div>
       </div>
 
@@ -165,12 +160,13 @@ const AdminDashboardPage = () => {
         ))}
       </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-8">
+      {/* Usage / Recent Previews */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-8">
         <RecentPreviews />
         <UsageStats />
       </div>
 
-      {/* Projects */}
+      {/* Projects List */}
       <div className="bg-white rounded-xl border border-gray-200 p-6">
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-lg font-semibold text-gray-900">
@@ -179,7 +175,7 @@ const AdminDashboardPage = () => {
           <Filter size={16} className="text-gray-400" />
         </div>
 
-        <div className={`grid gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-3`}>
+        <div className="grid gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
           {filteredProjects.map((project) => (
             <ProjectCard key={project.id} project={project} />
           ))}
