@@ -1,4 +1,5 @@
 import { MoreVertical, Activity, Globe, Github } from "lucide-react";
+import { Link } from "react-router-dom";
 
 const getStatusColor = (status) => {
   switch (status) {
@@ -29,7 +30,7 @@ const ProjectCard = ({ project }) => (
           {/* Project Info */}
           <div>
             <h3 className="font-semibold text-gray-900 mb-1 group-hover:text-black transition-colors">
-              {project.name}
+              <Link to={`project-detail/${project.name}`}>{project.name}</Link>
             </h3>
             <p className="text-sm text-gray-600 mb-1">{project.domain}</p>
             <p className="text-xs text-gray-500 flex items-center gap-1">
