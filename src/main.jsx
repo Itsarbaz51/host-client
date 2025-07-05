@@ -13,6 +13,7 @@ import DashboardLayout from "./layouts/DashboardLayout";
 import DeploymentPage from "./pages/admin/DeploymentPage";
 import DomainPage from "./pages/admin/DomainPage";
 import Dashboard from "./pages/Dashboard";
+import ProjectDetail from "./pages/admin/ProjectDetail";
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -21,6 +22,8 @@ const router = createBrowserRouter(
         <Route index element={<Dashboard />} />
         <Route path="deployments" element={<DeploymentPage />} />
         <Route path="domains" element={<DomainPage />} />
+
+        <Route path="project-detail/:id" element={<ProjectDetail />} />
       </Route>
     </>
   )
