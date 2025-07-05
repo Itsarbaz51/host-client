@@ -231,120 +231,163 @@ function DeploymentPage() {
   const getEnvironmentColor = (env) => {
     switch (env) {
       case 'arbaz.dev':
-        return 'bg-orange-100 text-orange-800';
+        return 'bg-white text-black border border-gray-300';
       case 'gym':
-        return 'bg-blue-100 text-blue-800';
+        return 'bg-black text-white border border-gray-700';
       case 'cafe':
-        return 'bg-purple-100 text-purple-800';
+        return 'bg-gray-800 text-white border border-gray-600';
       default:
-        return 'bg-gray-100 text-gray-800';
+        return 'bg-gray-100 text-gray-800 border border-gray-300';
     }
   };
-  return (<>
 
-    {/* Main Content */}
-    < div className="px-4 sm:px-6 lg:px-8 py-8" >
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">Deployments</h1>
-        <p className="text-gray-600">All deployments from <span className="font-mono text-sm">arbaz-kayamkhani-projects</span></p>
-      </div>
-
-      {/* Filters */}
-      <div className="flex justify-between items-center mb-6">
-        <div className="flex items-center space-x-4">
-          <button className="flex items-center space-x-2 px-3 py-2 border border-gray-300 rounded-md text-sm hover:bg-gray-50">
-            <Calendar className="w-4 h-4" />
-            <span>Select Date Range</span>
-          </button>
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
+      {/* Main Content */}
+      <div className="px-4 sm:px-6 lg:px-8 py-8">
+        <div className="mb-8">
+          <h1 className="text-4xl font-bold text-gray-900 mb-3 tracking-tight">Deployments</h1>
+          <p className="text-gray-600 text-lg">
+            All deployments from{' '}
+            <span className="font-mono text-sm bg-gray-100 px-2 py-1 rounded border">
+              arbaz-kayamkhani-projects
+            </span>
+          </p>
         </div>
-        <div className="flex items-center space-x-4">
-          <div className="relative">
-            <button className="flex items-center space-x-2 px-3 py-2 border border-gray-300 rounded-md text-sm hover:bg-gray-50">
-              <span>{selectedEnvironment}</span>
-              <ChevronDown className="w-4 h-4" />
+
+        {/* Filters */}
+        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-8 gap-4">
+          <div className="flex items-center space-x-4">
+            <button className="flex items-center space-x-2 px-4 py-2 bg-white border border-gray-300 rounded-lg text-sm hover:bg-gray-50 hover:border-gray-400 transition-all duration-200 shadow-sm">
+              <Calendar className="w-4 h-4" />
+              <span>Select Date Range</span>
             </button>
           </div>
-          <div className="flex items-center space-x-2">
-            <div className="w-3 h-3 bg-orange-400 rounded-full"></div>
-            <div className="w-3 h-3 bg-red-400 rounded-full"></div>
-          </div>
-          <div className="relative">
-            <button className="flex items-center space-x-2 px-3 py-2 border border-gray-300 rounded-md text-sm hover:bg-gray-50">
-              <span>{selectedStatus}</span>
-              <span className="text-gray-500">6/6</span>
-              <ChevronDown className="w-4 h-4" />
-            </button>
+          <div className="flex items-center space-x-4">
+            <div className="relative">
+              <button className="flex items-center space-x-2 px-4 py-2 bg-white border border-gray-300 rounded-lg text-sm hover:bg-gray-50 hover:border-gray-400 transition-all duration-200 shadow-sm">
+                <span>{selectedEnvironment}</span>
+                <ChevronDown className="w-4 h-4" />
+              </button>
+            </div>
+            <div className="flex items-center space-x-2">
+              <div className="w-3 h-3 bg-black rounded-full border border-gray-300"></div>
+              <div className="w-3 h-3 bg-gray-600 rounded-full border border-gray-300"></div>
+            </div>
+            <div className="relative">
+              <button className="flex items-center space-x-2 px-4 py-2 bg-white border border-gray-300 rounded-lg text-sm hover:bg-gray-50 hover:border-gray-400 transition-all duration-200 shadow-sm">
+                <span>{selectedStatus}</span>
+                <span className="text-gray-500">6/6</span>
+                <ChevronDown className="w-4 h-4" />
+              </button>
+            </div>
           </div>
         </div>
-      </div>
 
-      {/* Deployments Table */}
-      <div className="bg-white rounded-lg border border-gray-200">
-        <div className="overflow-x-auto">
-          <table className="w-full">
-            <tbody className="divide-y divide-gray-200">
-              {deployments.map((deployment) => (
-                <tr key={deployment.id} className="hover:bg-gray-50">
-                  <td className="px-6 py-4">
-                    <div className="flex flex-col space-y-1">
-                      <div className="font-mono text-sm font-medium text-gray-900">{deployment.id}</div>
-                      <div className="text-xs text-gray-500">Production</div>
-                    </div>
-                  </td>
-                  <td className="px-6 py-4">
-                    <div className="flex items-center space-x-2">
-                      <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                      <span className="text-sm font-medium text-gray-900">Ready</span>
-                    </div>
-                    <div className="text-xs text-gray-500 mt-1">{deployment.statusTime}</div>
-                  </td>
-                  <td className="px-6 py-4">
-                    <div className="flex items-center space-x-2">
-                      <div className="w-6 h-6 bg-orange-100 rounded flex items-center justify-center">
-                        <span className="text-orange-600 text-xs font-bold">▼</span>
-                      </div>
-                      <span className={`px-2 py-1 rounded text-xs font-medium ${getEnvironmentColor(deployment.environment)}`}>
-                        {deployment.environment}
-                      </span>
-                    </div>
-                  </td>
-                  <td className="px-6 py-4">
-                    <div className="flex items-center space-x-2">
-                      <GitBranch className="w-4 h-4 text-gray-400" />
-                      <span className="text-sm text-gray-900">{deployment.branch}</span>
-                    </div>
-                    <div className="flex items-center space-x-2 mt-1">
-                      <span className="text-xs text-gray-500">~</span>
-                      <span className="text-xs font-mono text-gray-700">{deployment.commit}</span>
-                      <span className="text-xs text-gray-500">{deployment.message}</span>
-                    </div>
-                  </td>
-                  <td className="px-6 py-4">
-                    <div className="text-sm text-gray-900">{deployment.date} by {deployment.user}</div>
-                  </td>
-                  <td className="px-6 py-4">
-                    <div className="flex items-center space-x-2">
-                      <button className="w-6 h-6 bg-gray-100 rounded border border-gray-300 flex items-center justify-center hover:bg-gray-200">
-                        <ExternalLink className="w-3 h-3 text-gray-600" />
-                      </button>
-                      <button className="w-6 h-6 flex items-center justify-center hover:bg-gray-100 rounded">
-                        <MoreHorizontal className="w-4 h-4 text-gray-500" />
-                      </button>
-                    </div>
-                  </td>
+        {/* Deployments Table */}
+        <div className="bg-white rounded-xl border border-gray-200 shadow-lg overflow-hidden">
+          <div className="overflow-x-auto">
+            <table className="w-full">
+              <thead className="bg-gray-50 border-b border-gray-200">
+                <tr>
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
+                    Deployment ID
+                  </th>
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
+                    Status
+                  </th>
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
+                    Environment
+                  </th>
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
+                    Branch & Commit
+                  </th>
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
+                    Details
+                  </th>
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
+                    Actions
+                  </th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-        <div className="px-6 py-4 border-t border-gray-200">
-          <button className="text-sm text-gray-500 hover:text-gray-700">Load More</button>
+              </thead>
+              <tbody className="divide-y divide-gray-100">
+                {deployments.map((deployment, index) => (
+                  <tr 
+                    key={deployment.id} 
+                    className={`hover:bg-gray-50 transition-colors duration-150 ${
+                      index % 2 === 0 ? 'bg-white' : 'bg-gray-50/50'
+                    }`}
+                  >
+                    <td className="px-6 py-5">
+                      <div className="flex flex-col space-y-1">
+                        <div className="font-mono text-sm font-semibold text-gray-900 bg-gray-100 px-2 py-1 rounded inline-block w-fit">
+                          {deployment.id}
+                        </div>
+                        <div className="text-xs text-gray-500 font-medium">Production</div>
+                      </div>
+                    </td>
+                    <td className="px-6 py-5">
+                      <div className="flex items-center space-x-2">
+                        <div className="w-3 h-3 bg-black rounded-full border border-gray-300"></div>
+                        <span className="text-sm font-semibold text-gray-900">Ready</span>
+                      </div>
+                      <div className="text-xs text-gray-500 mt-1 font-mono">{deployment.statusTime}</div>
+                    </td>
+                    <td className="px-6 py-5">
+                      <div className="flex items-center space-x-3">
+                        <div className="w-8 h-8 bg-gray-100 rounded-lg flex items-center justify-center border border-gray-200">
+                          <span className="text-gray-700 text-sm font-bold">▼</span>
+                        </div>
+                        <span className={`px-3 py-1 rounded-lg text-xs font-semibold ${getEnvironmentColor(deployment.environment)}`}>
+                          {deployment.environment}
+                        </span>
+                      </div>
+                    </td>
+                    <td className="px-6 py-5">
+                      <div className="flex items-center space-x-2 mb-2">
+                        <GitBranch className="w-4 h-4 text-gray-500" />
+                        <span className="text-sm font-semibold text-gray-900">{deployment.branch}</span>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <span className="text-xs text-gray-400">~</span>
+                        <span className="text-xs font-mono font-semibold text-black bg-gray-100 px-2 py-1 rounded">
+                          {deployment.commit}
+                        </span>
+                        <span className="text-xs text-gray-600">{deployment.message}</span>
+                      </div>
+                    </td>
+                    <td className="px-6 py-5">
+                      <div className="text-sm text-gray-900">
+                        <span className="font-semibold">{deployment.date}</span> by{' '}
+                        <span className="font-mono text-xs bg-gray-100 px-2 py-1 rounded">
+                          {deployment.user}
+                        </span>
+                      </div>
+                    </td>
+                    <td className="px-6 py-5">
+                      <div className="flex items-center space-x-2">
+                        <button className="w-8 h-8 bg-white rounded-lg border border-gray-300 flex items-center justify-center hover:bg-gray-50 hover:border-gray-400 transition-all duration-200 shadow-sm">
+                          <ExternalLink className="w-4 h-4 text-gray-600" />
+                        </button>
+                        <button className="w-8 h-8 flex items-center justify-center hover:bg-gray-100 rounded-lg transition-all duration-200">
+                          <MoreHorizontal className="w-4 h-4 text-gray-500" />
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+          <div className="px-6 py-4 border-t border-gray-200 bg-gray-50">
+            <button className="text-sm font-semibold text-gray-600 hover:text-gray-900 transition-colors duration-200">
+              Load More Deployments
+            </button>
+          </div>
         </div>
       </div>
-    </div >
-
-  </>
-  )
+    </div>
+  );
 }
 
 export default DeploymentPage
