@@ -23,13 +23,10 @@ function Navbar() {
 
   const navItems = [
     { name: "Dashboard", icon: Home, link: "/dashboard" },
-    { name: "Integrations", icon: Layers, link: "integrations" },
     { name: "Deployments", icon: GitBranch, link: "deployments" },
-    { name: "Activity", icon: Activity, link: "activity" },
+    { name: "Analytics", icon: Activity, link: "analytics" },
     { name: "Domains", icon: Globe, link: "domains" },
-    { name: "Usage", icon: BarChart3, link: "usage" },
     { name: "Storage", icon: Database, link: "storage" },
-    { name: "Flags", icon: Flag, link: "flags" },
     { name: "Support", icon: HelpCircle, link: "support" },
     { name: "Settings", icon: Settings, link: "settings" },
   ];
@@ -99,7 +96,7 @@ function Navbar() {
       </div>
 
       {/* Bottom Navigation */}
-      <div className="bg-white border-t border-gray-200">
+      <div className="bg-white border-t py-1 border-gray-200">
         <div className="flex flex-row items-center justify-center px-6 lg:px-8">
           <nav className="flex space-x-1 overflow-x-auto">
             {navItems.map(({ name, icon: Icon, link }) => (
