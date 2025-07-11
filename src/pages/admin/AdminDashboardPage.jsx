@@ -12,11 +12,12 @@ import {
 import ProjectCard from "../../components/Ui/ProjectCard";
 import UsageStats from "../../components/Ui/UsageStats";
 import RecentPreviews from "../../components/Ui/RecentPreviews";
+import ProjectAdd from "./ProjectAdd";
 
 const StatsCard = ({ stat }) => {
   const Icon = stat.icon;
   return (
-    <div className="bg-white rounded-xl border border-gray-200 p-6 hover:shadow-md transition-shadow">
+    <div className="bg-white rounded-xl border border-gray-200 p-6 hover:shadow-lg  shadow-md   transition-shadow">
       <div className="flex items-center justify-between">
         <div>
           <p className="text-sm font-medium text-gray-600">{stat.label}</p>
@@ -34,6 +35,7 @@ const StatsCard = ({ stat }) => {
 const AdminDashboardPage = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [filterStatus, setFilterStatus] = useState("all");
+  const [showAddProject, setShowAddProject] = useState(false);
 
   const projects = [
     {
@@ -112,90 +114,93 @@ const AdminDashboardPage = () => {
   });
 
   return (
-    <div className="min-h-screen bg-gray-50 rounded-2xl p-4 sm:p-6 md:p-8">
-      {/* Header Controls */}
-      <div className="bg-white rounded-xl border border-gray-200 p-4 sm:p-6 mb-8">
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-          {/* Search and Filter - Stack on mobile */}
-          <div className="flex flex-col sm:flex-row sm:items-center gap-4 flex-1 w-full">
-            {/* Search Input */}
-            <div className="relative w-full sm:w-auto sm:flex-1">
-              <Search
-                size={20}
-                className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
-              />
-              <input
-                type="text"
-                placeholder="Search projects..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg bg-white text-sm focus:outline-none focus:ring-2 focus:ring-black"
-              />
+    <>
+      <div className="min-h-screen bg-gray-50 rounded-2xl p-4 sm:p-6 md:p-8">
+        {/* Header Controls */}
+        <div className="bg-white rounded-xl border border-gray-200 p-4 sm:p-6 mb-8 shadow-md hover:shadow-lg">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+            {/* Search and Filter - Stack on mobile */}
+            <div className="flex flex-col sm:flex-row sm:items-center gap-4 flex-1 w-full">
+              {/* Search Input */}
+              <div className="relative w-full sm:w-auto sm:flex-1">
+                <Search
+                  size={20}
+                  className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
+                />
+                <input
+                  type="text"
+                  placeholder="Search projects..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg bg-white text-sm focus:outline-none focus:ring-2 focus:ring-black"
+                />
+              </div>
+
+              {/* Filter Dropdown */}
+              <select
+                value={filterStatus}
+                onChange={(e) => setFilterStatus(e.target.value)}
+                className="w-full sm:w-auto px-3 py-2 border border-gray-300 rounded-lg bg-white text-sm focus:outline-none focus:ring-2 focus:ring-black"
+              >
+                <option value="all">All Status</option>
+                <option value="done">Done</option>
+                <option value="skills added">Skills Added</option>
+              </select>
             </div>
 
-            {/* Filter Dropdown */}
-            <select
-              value={filterStatus}
-              onChange={(e) => setFilterStatus(e.target.value)}
-              className="w-full sm:w-auto px-3 py-2 border border-gray-300 rounded-lg bg-white text-sm focus:outline-none focus:ring-2 focus:ring-black"
-            >
-              <option value="all">All Status</option>
-              <option value="done">Done</option>
-              <option value="skills added">Skills Added</option>
-            </select>
+            {/* New Project Button */}
+            <button onClick={e => { e.preventDefault(); setShowAddProject(true) }} className="w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-lg bg-black px-4 py-2 text-sm font-medium text-white hover:bg-gray-800 transition-colors shadow-sm">
+              <Plus size={16} />
+              New Project
+            </button>
           </div>
-
-          {/* New Project Button */}
-          <button className="w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-lg bg-black px-4 py-2 text-sm font-medium text-white hover:bg-gray-800 transition-colors shadow-sm">
-            <Plus size={16} />
-            New Project
-          </button>
-        </div>
-      </div>
-
-      {/* Stats */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-        {stats.map((stat, index) => (
-          <StatsCard key={index} stat={stat} />
-        ))}
-      </div>
-
-      {/* Usage / Recent Previews */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-8">
-        <RecentPreviews />
-        <UsageStats />
-      </div>
-
-      {/* Projects List */}
-      <div className="bg-white rounded-xl border border-gray-200 p-6">
-        <div className="flex items-center justify-between mb-6">
-          <h2 className="text-lg font-semibold text-gray-900">
-            Projects ({filteredProjects.length})
-          </h2>
-          <Filter size={16} className="text-gray-400" />
         </div>
 
-        <div className="grid gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
-          {filteredProjects.map((project) => (
-            <ProjectCard key={project.id} project={project} />
+        {/* Stats */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+          {stats.map((stat, index) => (
+            <StatsCard key={index} stat={stat} />
           ))}
         </div>
 
-        {filteredProjects.length === 0 && (
-          <div className="text-center py-12">
-            <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
-              <Search size={24} className="text-gray-400" />
-            </div>
-            <h3 className="text-lg font-medium text-gray-900 mb-2">
-              No projects found
-            </h3>
-            <p className="text-gray-500">
-              Try adjusting your search terms or filters
-            </p>
+        {/* Usage / Recent Previews */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-8">
+          <RecentPreviews />
+          <UsageStats />
+        </div>
+
+        {/* Projects List */}
+        <div className="bg-white rounded-xl border border-gray-200 p-6 shadow-md hover:shadow-lg">
+          <div className="flex items-center justify-between mb-6">
+            <h2 className="text-lg font-semibold text-gray-900">
+              Projects ({filteredProjects.length})
+            </h2>
+            <Filter size={16} className="text-gray-400" />
           </div>
-        )}
+
+          <div className="grid gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
+            {filteredProjects.map((project) => (
+              <ProjectCard key={project.id} project={project} />
+            ))}
+          </div>
+
+          {filteredProjects.length === 0 && (
+            <div className="text-center py-12">
+              <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <Search size={24} className="text-gray-400" />
+              </div>
+              <h3 className="text-lg font-medium text-gray-900 mb-2">
+                No projects found
+              </h3>
+              <p className="text-gray-500">
+                Try adjusting your search terms or filters
+              </p>
+            </div>
+          )}
+        </div>
       </div>
-    </div>
+      {showAddProject && <ProjectAdd onClose={() => setShowAddProject(false)}  />}
+    </>
   );
 };
 

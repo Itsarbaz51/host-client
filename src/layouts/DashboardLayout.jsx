@@ -1,19 +1,22 @@
 import React from "react";
 import { Outlet } from "react-router-dom";
-import Footer from "../components/HeaderFooter/Footer";
-import Navbar from "../components/HeaderFooter/Navbar";
+import DashboardNavbar from "../components/HeaderFooter/DashboardNavbar";
+import DashboardFooter from "../components/HeaderFooter/DashboardFooter";
+import SmoothScroll from "../pages/SmoothScroll";
 
 function DashboardLayout() {
   return (
-    <div className="flex flex-col min-h-screen overflow-hidden">
-      <Navbar />
+    // <SmoothScroll>
+      <div className="flex flex-col min-h-screen overflow-hidden">
+        <DashboardNavbar />
 
-      <main className="flex-1 overflow-hidden">
-        <Outlet />
-      </main>
+        <main className="flex-1 overflow-hidden">
+          <Outlet />
+        </main>
 
-      <Footer />
-    </div>
+        <DashboardFooter />
+      </div>
+    // </SmoothScroll>
   );
 }
 

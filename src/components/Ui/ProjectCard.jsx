@@ -13,7 +13,7 @@ const getStatusColor = (status) => {
 };
 
 const ProjectCard = ({ project }) => (
-  <div className="group relative bg-white rounded-xl border border-gray-200 hover:border-gray-300 transition-all duration-300 hover:shadow-lg overflow-hidden w-full max-w-full sm:max-w-md mx-auto">
+  <div className="group relative bg-white rounded-xl shadow-md hover:shadow-lg border border-gray-200 hover:border-gray-300 transition-all duration-300 overflow-hidden w-full max-w-full sm:max-w-md mx-auto">
     <div className="absolute top-0 left-0 right-0 h-1 bg-black"></div>
 
     <div className="p-4 sm:p-6">

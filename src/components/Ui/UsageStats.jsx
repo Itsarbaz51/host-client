@@ -8,7 +8,7 @@ const UsageStats = () => {
   ];
 
   return (
-    <div className="bg-white rounded-lg border border-gray-200 p-6">
+    <div className="bg-white rounded-lg border border-gray-200 p-6 shadow-md hover:shadow-lg">
       <div className="flex items-center justify-between mb-4">
         <h3 className="text-lg font-semibold text-gray-900">Usage</h3>
         <button className="px-3 py-1 bg-black text-white text-sm rounded-md hover:bg-gray-800 transition-colors">

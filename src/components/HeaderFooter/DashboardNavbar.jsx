@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Search,
   Bell,
@@ -12,21 +12,33 @@ import {
   HelpCircle,
   GitBranch,
   Home,
+  Cog,
+  LogOut,
 } from "lucide-react";
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { logoutUser } from "../../redux/slices/authSlice";
 
-function Navbar() {
+function DashboardNavbar() {
   const [searchFocused, setSearchFocused] = useState(false);
 
   const navItems = [
     { name: "Dashboard", icon: Home, link: "/dashboard" },
     { name: "Deployments", icon: GitBranch, link: "deployments" },
-    { name: "Analytics", icon: Activity, link: "analytics" },
+    // { name: "Analytics", icon: Activity, link: "analytics" },
     { name: "Domains", icon: Globe, link: "domains" },
     { name: "Storage", icon: Database, link: "storage" },
-    { name: "Support", icon: HelpCircle, link: "support" },
-    { name: "Settings", icon: Settings, link: "settings" },
+    // { name: "Support", icon: HelpCircle, link: "support" },
+    { name: "Account Setting", icon: Cog, link: "account-setting" },
+    // { name: "Settings", icon: Settings, link: "settings" },
   ];
+
+  const dispatch = useDispatch();
+  // const { user } = useSelector((state) => state.auth);
+
+  const handleLogout = () => {
+    dispatch(logoutUser())
+  };
 
   return (
     <header className="bg-white border-b border-gray-200 shadow-sm z-50">
@@ -40,7 +52,7 @@ function Navbar() {
             </div>
             <div className="">
               <h1 className="text-base sm:text-lg font-semibold text-gray-900">
-                arbaz kayamkhani's projects
+                arbaz
               </h1>
               <div className="flex items-center space-x-2 mt-0.5">
                 <span className="text-xs px-2 py-1 rounded-full bg-gray-100 border border-gray-200 text-gray-800">
@@ -95,6 +107,10 @@ function Navbar() {
             <div className="w-8 h-8 bg-black rounded-full flex items-center justify-center">
               <User className="w-4 h-4 text-white" />
             </div>
+            <div className="hover:bg-red-200 duration-300 rounded-full p-2 cursor-pointer " onClick={handleLogout}>
+              <LogOut className="text-red-600 w-5 h-5" />
+
+            </div>
           </div>
         </div>
       </div>
@@ -109,10 +125,9 @@ function Navbar() {
                 to={link}
                 end={link === "/dashboard"}
                 className={({ isActive }) =>
-                  `flex-shrink-0 group flex items-center space-x-2 px-4 py-2 text-sm font-medium rounded-lg transition whitespace-nowrap ${
-                    isActive
-                      ? "text-black bg-gray-100"
-                      : "text-gray-600 hover:text-black hover:bg-gray-50"
+                  `flex-shrink-0 group flex items-center space-x-2 px-4 py-2 text-sm font-medium rounded-lg transition whitespace-nowrap ${isActive
+                    ? "text-black bg-gray-100"
+                    : "text-gray-600 hover:text-black hover:bg-gray-50"
                   }`
                 }
               >
@@ -127,4 +142,4 @@ function Navbar() {
   );
 }
 
-export default Navbar;
+export default DashboardNavbar;

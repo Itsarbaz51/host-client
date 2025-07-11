@@ -278,7 +278,7 @@ function DeploymentPage() {
                 <p className="text-gray-600 text-sm sm:text-base mt-1">
                   All deployments from{" "}
                   <span className="font-mono text-sm bg-gray-100 px-2 py-1 rounded-md border">
-                    arbaz-kayamkhani-projects
+                    arbaz
                   </span>
                 </p>
               </div>
