@@ -99,26 +99,12 @@ export const githubSignup = (code) => async (dispatch) => {
     );
 
     dispatch(authSuccess(data));
-    toast.success("Signed up with GitHub!");
+    toast.success("GitHub connected successfully.");
   } catch (err) {
     const msg = handleError(err);
     dispatch(authFail(msg));
     toast.error(msg);
     throw err;
-  }
-};
-
-export const githubLogin = (code) => async (dispatch) => {
-  dispatch(authRequest());
-  try {
-    const { data } = await axios.post(`${baseURL}/auth/login`, { code });
-    const token = data.data.token;
-    dispatch(authSuccess({ token }));
-    toast.success("Logged in with GitHub!");
-  } catch (err) {
-    const msg = handleError(err);
-    dispatch(authFail(msg));
-    toast.error(msg);
   }
 };
 
