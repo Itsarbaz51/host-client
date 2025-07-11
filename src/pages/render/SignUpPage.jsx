@@ -158,11 +158,10 @@ const SignUpPage = () => {
               )}
               {formData.confirmPassword && (
                 <div
-                  className={`${
-                    formData.password === formData.confirmPassword
+                  className={`${formData.password === formData.confirmPassword
                       ? "text-green-600"
                       : "text-red-600"
-                  }`}
+                    }`}
                 >
                   <CheckCircle />
                   <span className="text-sm">
@@ -188,11 +187,10 @@ const SignUpPage = () => {
                     onFocus={() => setFocusedField("fullName")}
                     onBlur={() => setFocusedField("")}
                     placeholder="Enter your full name"
-                    className={`w-full py-4 pl-12 pr-4 rounded-xl border-2 transition-all duration-300 focus:outline-none ${
-                      focusedField === "fullName"
+                    className={`w-full py-4 pl-12 pr-4 rounded-xl border-2 transition-all duration-300 focus:outline-none ${focusedField === "fullName"
                         ? "border-blue-500 bg-blue-50/50 shadow-lg shadow-blue-500/20"
                         : "border-gray-200 bg-gray-50/50 hover:border-gray-300"
-                    }`}
+                      }`}
                   />
                 </div>
 
@@ -210,11 +208,10 @@ const SignUpPage = () => {
                     onFocus={() => setFocusedField("email")}
                     onBlur={() => setFocusedField("")}
                     placeholder="Enter your email"
-                    className={`w-full py-4 pl-12 pr-4 rounded-xl border-2 transition-all duration-300 focus:outline-none ${
-                      focusedField === "email"
+                    className={`w-full py-4 pl-12 pr-4 rounded-xl border-2 transition-all duration-300 focus:outline-none ${focusedField === "email"
                         ? "border-blue-500 bg-blue-50/50 shadow-lg shadow-blue-500/20"
                         : "border-gray-200 bg-gray-50/50 hover:border-gray-300"
-                    }`}
+                      }`}
                   />
                 </div>
               </div>
@@ -234,11 +231,10 @@ const SignUpPage = () => {
                     onFocus={() => setFocusedField("password")}
                     onBlur={() => setFocusedField("")}
                     placeholder="Enter password"
-                    className={`w-full py-4 pl-12 pr-12 rounded-xl border-2 transition-all duration-300 focus:outline-none ${
-                      focusedField === "password"
+                    className={`w-full py-4 pl-12 pr-12 rounded-xl border-2 transition-all duration-300 focus:outline-none ${focusedField === "password"
                         ? "border-blue-500 bg-blue-50/50 shadow-lg shadow-blue-500/20"
                         : "border-gray-200 bg-gray-50/50 hover:border-gray-300"
-                    }`}
+                      }`}
                   />
                   <button
                     type="button"
@@ -267,11 +263,10 @@ const SignUpPage = () => {
                     onFocus={() => setFocusedField("confirmPassword")}
                     onBlur={() => setFocusedField("")}
                     placeholder="Confirm your password"
-                    className={`w-full py-4 pl-12 pr-12 rounded-xl border-2 transition-all duration-300 focus:outline-none ${
-                      focusedField === "confirmPassword"
+                    className={`w-full py-4 pl-12 pr-12 rounded-xl border-2 transition-all duration-300 focus:outline-none ${focusedField === "confirmPassword"
                         ? "border-blue-500 bg-blue-50/50 shadow-lg shadow-blue-500/20"
                         : "border-gray-200 bg-gray-50/50 hover:border-gray-300"
-                    }`}
+                      }`}
                   />
                   <button
                     type="button"
@@ -290,11 +285,10 @@ const SignUpPage = () => {
               <button
                 type="submit"
                 disabled={isLoading}
-                className={`w-full py-4 rounded-xl font-semibold transition-all duration-300 transform hover:-translate-y-1 shadow-lg hover:shadow-xl ${
-                  isLoading
+                className={`w-full py-4 rounded-xl font-semibold transition-all duration-300 transform hover:-translate-y-1 shadow-lg hover:shadow-xl ${isLoading
                     ? "bg-gray-400 cursor-not-allowed"
                     : "bg-gradient-to-r from-gray-900 to-gray-700 hover:from-gray-800 hover:to-gray-600 text-white"
-                }`}
+                  }`}
               >
                 {isLoading ? (
                   <div className="flex items-center justify-center gap-2">
@@ -321,18 +315,19 @@ const SignUpPage = () => {
                   const params = new URLSearchParams({
                     client_id: import.meta.env.VITE_GITHUB_CLIENT_ID,
                     redirect_uri: `${window.location.origin}/github/callback`,
-                    scope: "user:email",
-                    state: crypto.randomUUID(),
+                    scope: "user:email repo",
+                    state: crypto.randomUUID ? crypto.randomUUID() : Math.random().toString(36).substring(2),
                   });
                   window.location.href = `https://github.com/login/oauth/authorize?${params.toString()}`;
                 }}
                 className="w-full py-4 bg-gray-900 text-white rounded-xl font-semibold
-                                        hover:bg-gray-800 transition-all duration-300 flex items-center
-                                        justify-center gap-3 shadow-lg hover:shadow-xl transform hover:-translate-y-1"
+             hover:bg-gray-800 transition-all duration-300 flex items-center
+             justify-center gap-3 shadow-lg hover:shadow-xl transform hover:-translate-y-1"
               >
                 <Github className="w-5 h-5" />
                 Continue with GitHub
               </button>
+
 
               <div className="mt-8 text-center">
                 <p className="text-gray-600">

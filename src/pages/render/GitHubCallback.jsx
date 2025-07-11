@@ -1,4 +1,3 @@
-// src/pages/GitHubCallback.jsx
 import { useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { useNavigate, useSearchParams } from "react-router-dom";
@@ -11,10 +10,23 @@ const GitHubCallback = () => {
 
   useEffect(() => {
     const code = params.get("code");
-    if (!code) return navigate("/login");        
-    dispatch(githubSignup(code))
-      .then(() => navigate("/dashboard"))        
-      .catch(() => navigate("/login"));          
+    if (!code) {
+      navigate("/login");
+      return;
+    }
+
+    async function handleGithubSignup() {
+      try {
+        // If using redux-toolkit with createAsyncThunk, you may want to unwrap:
+        await dispatch(githubSignup(code)).unwrap();
+        navigate("/dashboard");
+      } catch (error) {
+        console.error("GitHub signup failed:", error);
+        navigate("/login");
+      }
+    }
+
+    handleGithubSignup();
   }, [dispatch, navigate, params]);
 
   return (
