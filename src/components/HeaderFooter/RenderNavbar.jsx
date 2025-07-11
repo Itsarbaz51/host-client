@@ -30,10 +30,10 @@ const navItems = [
 
 function RenderNavbar() {
   const [isOpen, setIsOpen] = useState(false);
-  const dispatch = useDispatch();
+  // const dispatch = useDispatch();
   const { user } = useSelector((state) => state.auth);
 
-  const isLoggedIn = Boolean(user?.success);
+  // const isLoggedIn = Boolean(user?.success);
 
   // useEffect(() => {
   //   if (isLoggedIn) {
@@ -113,7 +113,7 @@ function RenderNavbar() {
           ))}
         </ul>
         <div className="flex items-center space-x-6">
-          {user.statusCode === 200 ? (
+          {user? (
             <Link to="/dashboard">
               {user.avatarUrl ? <img
                 src={user.avatarUrl}

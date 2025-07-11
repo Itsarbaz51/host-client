@@ -7,7 +7,7 @@ axios.defaults.withCredentials = true;
 const baseURL = import.meta.env.VITE_BASE_URL;
 
 const initialState = {
-    user: [],
+    user: null,
     isLoading: false,
     error: null,
 };
@@ -131,7 +131,7 @@ export const logoutUser = () => async (dispatch) => {
             withCredentials: true,
         });
         console.log(data);
-        
+
         dispatch(authSuccess(data));
         toast.success("Logout successfully!");
     } catch (err) {

@@ -49,7 +49,7 @@ const LoginPage = () => {
     };
 
     useEffect(() => {
-        if (user.statusCode === 200) {
+        if (user) {
             navigate("/dashboard");
         }
     }, [user, navigate]);

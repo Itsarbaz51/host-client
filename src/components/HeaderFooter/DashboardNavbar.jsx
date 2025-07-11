@@ -34,11 +34,13 @@ function DashboardNavbar() {
   ];
 
   const dispatch = useDispatch();
-  // const { user } = useSelector((state) => state.auth);
+  const navigate = useNavigate();
 
   const handleLogout = () => {
-    dispatch(logoutUser())
+    dispatch(logoutUser()).then(() => navigate('/login'))
   };
+
+
 
   return (
     <header className="bg-white border-b border-gray-200 shadow-sm z-50">
