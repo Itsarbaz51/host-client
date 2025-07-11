@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Lock,
   User,
@@ -71,12 +71,14 @@ const SignUpPage = () => {
     }, 2000);
   };
 
-  const navigator = useNavigate();
+  const navigate = useNavigate();
   const { user } = useSelector((state) => state.auth);
-  
-  if (user.statusCode === 201) {
-    navigator("/login");
-  }
+
+  useEffect(() => {
+    if (user) {
+      navigate("/login");
+    }
+  }, [user, navigate]);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-gray-50 flex items-center justify-center p-6 relative overflow-hidden">

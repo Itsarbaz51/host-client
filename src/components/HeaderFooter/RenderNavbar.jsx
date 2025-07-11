@@ -30,18 +30,10 @@ const navItems = [
 
 function RenderNavbar() {
   const [isOpen, setIsOpen] = useState(false);
-  // const dispatch = useDispatch();
   const { user } = useSelector((state) => state.auth);
 
-  // const isLoggedIn = Boolean(user?.success);
-
-  // useEffect(() => {
-  //   if (isLoggedIn) {
-  //     dispatch(checkAuth());
-  //   }
-  // }, [dispatch, isLoggedIn]);
-
-
+  const location = useLocation();
+  const navigate = useNavigate();
 
   const handleAnchorClick = (e, targetId) => {
     e.preventDefault();
@@ -52,9 +44,6 @@ function RenderNavbar() {
     }
   };
 
-  const location = useLocation();
-  const navigate = useNavigate();
-
   const handleHomeClick = (e, path) => {
     e.preventDefault();
     if (location.pathname === "/" && path === "/") {
@@ -64,26 +53,27 @@ function RenderNavbar() {
     }
   };
 
-
-
   return (
-    <header
-      className={` z-50 w-full px-6 sm:px-10 py-4 border-b border-b-gray-300 flex items-center justify-between transition-all duration-300 bg-white fixed`}
-    >
+    <header className="z-50 w-full px-6 sm:px-10 py-4 border-b border-b-gray-300 flex items-center justify-between bg-white fixed">
       {/* Logo */}
       <div className="flex gap-3 items-center">
         <AtSign className="text-3xl text-blue-600" />
         <Link to="/">
-          <h1 className="text-3xl font-bold capitalize text-gray-800">Server</h1>
+          <h1 className="text-3xl font-bold capitalize text-gray-800">
+            Server
+          </h1>
         </Link>
       </div>
 
       {/* Desktop Navigation */}
-      <nav className="hidden lg:flex items-center space-x-8" >
+      <nav className="hidden lg:flex items-center space-x-8">
         <ul className="flex space-x-4">
           {navItems.map((item, i) => (
-            <li key={i} className="hover:bg-black/10 px-4 py-2 rounded-lg transition duration-300">
-              {(item.type === "link" || (location.pathname === "/contact" && item.type === "link")) ? (
+            <li
+              key={i}
+              className="hover:bg-black/10 px-4 py-2 rounded-lg transition duration-300"
+            >
+              {item.type === "link" ? (
                 item.path === "/" ? (
                   <a
                     href="/"
@@ -93,7 +83,10 @@ function RenderNavbar() {
                     {item.name}
                   </a>
                 ) : (
-                  <Link to={item.path} className="text-lg font-medium text-gray-700">
+                  <Link
+                    to={item.path}
+                    className="text-lg font-medium text-gray-700"
+                  >
                     {item.name}
                   </Link>
                 )
@@ -108,20 +101,21 @@ function RenderNavbar() {
                   {item.name}
                 </a>
               )}
-
             </li>
           ))}
         </ul>
         <div className="flex items-center space-x-6">
-          {user? (
+          {user ? (
             <Link to="/dashboard">
-              {user.avatarUrl ? <img
-                src={user.avatarUrl}
-                alt={user.name || "User Avatar"}
-                className="w-10 h-10 rounded-full object-cover"
-              /> :
+              {user.avatarUrl ? (
+                <img
+                  src={user.avatarUrl}
+                  alt={user.name || "User Avatar"}
+                  className="w-10 h-10 rounded-full object-cover"
+                />
+              ) : (
                 <User />
-              }
+              )}
             </Link>
           ) : (
             <div className="space-x-4">
@@ -143,15 +137,22 @@ function RenderNavbar() {
       </nav>
 
       {/* Mobile Menu Toggle */}
-      <div className="lg:hidden cursor-pointer z-50" onClick={() => setIsOpen(!isOpen)}>
-        {isOpen ? <X className="text-3xl text-gray-800" /> : <Menu className="text-3xl text-gray-800" />}
+      <div
+        className="lg:hidden cursor-pointer z-50"
+        onClick={() => setIsOpen(!isOpen)}
+      >
+        {isOpen ? (
+          <X className="text-3xl text-gray-800" />
+        ) : (
+          <Menu className="text-3xl text-gray-800" />
+        )}
       </div>
 
       {/* Mobile Menu Overlay */}
       {isOpen && (
         <div className="fixed inset-0 z-40 bg-white flex justify-center items-center pt-10 h-screen bg-opacity-95">
           <div className="w-11/12 max-w-xl mx-auto p-6">
-            <ul className="flex flex-col lg:flex-row justify-center space-y-6 lg:space-x-8 lg:space-y-0">
+            <ul className="flex flex-col space-y-6">
               {navItems.map((item, i) => (
                 <li key={i}>
                   {item.type === "link" ? (
@@ -195,7 +196,6 @@ function RenderNavbar() {
           </div>
         </div>
       )}
-
     </header>
   );
 }

@@ -37,10 +37,8 @@ function DashboardNavbar() {
   const navigate = useNavigate();
 
   const handleLogout = () => {
-    dispatch(logoutUser()).then(() => navigate('/login'))
+    dispatch(logoutUser()).then(() => navigate("/login"));
   };
-
-
 
   return (
     <header className="bg-white border-b border-gray-200 shadow-sm z-50">
@@ -81,8 +79,7 @@ function DashboardNavbar() {
               />
               <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
                 <kbd className="bg-gray-100 text-gray-500 px-1.5 py-0.5 rounded text-xs border border-gray-200">
-                  <Command className="w-2.5 h-2.5 inline mr-0.5" />
-                  K
+                  <Command className="w-2.5 h-2.5 inline mr-0.5" />K
                 </kbd>
               </div>
             </div>
@@ -109,9 +106,11 @@ function DashboardNavbar() {
             <div className="w-8 h-8 bg-black rounded-full flex items-center justify-center">
               <User className="w-4 h-4 text-white" />
             </div>
-            <div className="hover:bg-red-200 duration-300 rounded-full p-2 cursor-pointer " onClick={handleLogout}>
+            <div
+              className="hover:bg-red-200 duration-300 rounded-full p-2 cursor-pointer "
+              onClick={handleLogout}
+            >
               <LogOut className="text-red-600 w-5 h-5" />
-
             </div>
           </div>
         </div>
@@ -127,9 +126,10 @@ function DashboardNavbar() {
                 to={link}
                 end={link === "/dashboard"}
                 className={({ isActive }) =>
-                  `flex-shrink-0 group flex items-center space-x-2 px-4 py-2 text-sm font-medium rounded-lg transition whitespace-nowrap ${isActive
-                    ? "text-black bg-gray-100"
-                    : "text-gray-600 hover:text-black hover:bg-gray-50"
+                  `flex-shrink-0 group flex items-center space-x-2 px-4 py-2 text-sm font-medium rounded-lg transition whitespace-nowrap ${
+                    isActive
+                      ? "text-black bg-gray-100"
+                      : "text-gray-600 hover:text-black hover:bg-gray-50"
                   }`
                 }
               >
