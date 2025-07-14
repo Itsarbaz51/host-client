@@ -47,6 +47,19 @@ const LoginPage = () => {
     dispatch(login(formData));
   };
 
+  // 🔧 GitHub login handler
+  const handleGithubLogin = () => {
+    const params = new URLSearchParams({
+      client_id: import.meta.env.VITE_GITHUB_CLIENT_ID,
+      redirect_uri: `${window.location.origin}/github/callback`,
+      scope: "user:email",
+      state: crypto.randomUUID?.() || Math.random().toString(36).substring(2),
+    });
+
+    window.location.href = `https://github.com/login/oauth/authorize?${params.toString()}`;
+  };
+
+
   useEffect(() => {
     if (user) {
       navigate("/dashboard");
@@ -258,18 +271,10 @@ const LoginPage = () => {
 
                 <button
                   type="button"
-                  onClick={() => {
-                    const params = new URLSearchParams({
-                      client_id: import.meta.env.VITE_GITHUB_CLIENT_ID,
-                      redirect_uri: `${window.location.origin}/github/callback`,
-                      scope: "user:email repo",
-                      state: crypto.randomUUID ? crypto.randomUUID() : Math.random().toString(36).substring(2),
-                    });
-                    window.location.href = `https://github.com/login/oauth/authorize?${params.toString()}`;
-                  }}
+                  onClick={handleGithubLogin}
                   className="w-full py-4 bg-gray-900 text-white rounded-xl font-semibold
-                             hover:bg-gray-800 transition-all duration-300 flex items-center
-                             justify-center gap-3 shadow-lg hover:shadow-xl transform hover:-translate-y-1"
+                           hover:bg-gray-800 transition-all duration-300 flex items-center
+                           justify-center gap-3 shadow-lg hover:shadow-xl transform hover:-translate-y-1"
                 >
                   <Github className="w-5 h-5" />
                   Continue with GitHub

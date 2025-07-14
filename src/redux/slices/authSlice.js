@@ -81,14 +81,12 @@ export const checkAuth = () => async (dispatch) => {
     const { data } = await axios.get(`${baseURL}/auth/get-current-user`, {
       withCredentials: true,
     });
-    console.log(data);
     dispatch(authSuccess(data));
   } catch (err) {
     const msg = handleError(err);
     dispatch(authFail(msg));
   }
 };
-
 export const githubSignup = (code) => async (dispatch) => {
   dispatch(authRequest());
   try {
@@ -97,9 +95,29 @@ export const githubSignup = (code) => async (dispatch) => {
       { code },
       { withCredentials: true }
     );
-
     dispatch(authSuccess(data));
-    toast.success("GitHub connected successfully.");
+    toast.success("GitHub linked successful.");
+  } catch (err) {
+    const msg = handleError(err);
+    dispatch(authFail(msg));
+    toast.error(msg);
+    throw err;
+  }
+};
+
+export const githubConnect = (code) => async (dispatch) => {
+  dispatch(authRequest());
+
+  try {
+    const { data } = await axios.post(
+      `${baseURL}/auth/github-connect`,
+      { code },
+      { withCredentials: true }
+    );
+
+    dispatch(logout());
+    toast.success("GitHub account connected successfully.");
+    return data;
   } catch (err) {
     const msg = handleError(err);
     dispatch(authFail(msg));

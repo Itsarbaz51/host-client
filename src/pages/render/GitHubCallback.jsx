@@ -1,13 +1,15 @@
 import { useEffect } from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { githubSignup } from "../../redux/slices/authSlice";
+import { githubConnect, githubSignup } from "../../redux/slices/authSlice";
 
 const GitHubCallback = () => {
   const [params] = useSearchParams();
   const dispatch = useDispatch();
   const navigate = useNavigate();
-
+  const userData = useSelector((state) => state.auth?.user);
+  const data = userData?.data
+  console.log(data);
   useEffect(() => {
     const code = params.get("code");
     if (!code) {
@@ -15,19 +17,24 @@ const GitHubCallback = () => {
       return;
     }
 
-    async function handleGithubSignup() {
+    const handleGithubOAuth = async () => {
       try {
-        // If using redux-toolkit with createAsyncThunk, you may want to unwrap:
-        await dispatch(githubSignup(code)).unwrap();
+        if (data && data?.id) {
+          // User connect GitHub to existing account
+          await dispatch(githubConnect(code)).unwrap();
+        } else {
+          // No user -> treat this as login/signup
+          await dispatch(githubSignup(code)).unwrap();
+        }
         navigate("/dashboard");
       } catch (error) {
-        console.error("GitHub signup failed:", error);
+        console.error("GitHub OAuth failed:", error);
         navigate("/login");
       }
-    }
+    };
 
-    handleGithubSignup();
-  }, [dispatch, navigate, params]);
+    handleGithubOAuth();
+  }, [dispatch, navigate, params, data]);
 
   return (
     <div className="flex items-center justify-center h-screen">
