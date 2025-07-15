@@ -1,12 +1,12 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Search,
   X,
   Github,
-  ChevronDown, Edit3, Plus
+  ChevronDown, Plus
 } from "lucide-react";
 import { useDispatch, useSelector } from "react-redux";
-import { createProject, getAllRepos } from "../../redux/slices/projectSlice";
+import { createProject, getAllLogs, getAllRepos } from "../../redux/slices/projectSlice";
 
 const ProjectAdd = ({ onClose }) => {
   const [selectedAccount, setSelectedAccount] = useState("Itsarbaz51");
@@ -71,7 +71,7 @@ const ProjectAdd = ({ onClose }) => {
               <X size={20} />
             </button>
 
-            <div className="flex sm:flex-row flex-col gap-6 mb-4 px-8">
+            <div className="flex sm:flex-row flex-col gap-6 mb-4 px-8 ">
               <div className="w-64">
                 <select
                   className="w-full p-3 border-2 border-gray-200 rounded-xl bg-gray-50 focus:bg-white focus:outline-none focus:ring-4 focus:ring-indigo-100"
@@ -121,6 +121,7 @@ const ProjectAdd = ({ onClose }) => {
               ))}
             </div>
           </div>
+          {selectedRepo && <NewProjectForm project={selectedRepo} onClose={onClose} />}
         </div>
       ) : (
         // GitHub not connected fallback
@@ -159,11 +160,9 @@ const ProjectAdd = ({ onClose }) => {
       )}
 
       {/* Show the selected project */}
-      {selectedRepo && <NewProjectForm project={selectedRepo} onClose={onClose} />}
     </div>
   );
 };
-
 
 export default ProjectAdd;
 
@@ -171,8 +170,11 @@ export default ProjectAdd;
 function NewProjectForm({ project, onClose }) {
   const GITHUB_API = project?.contents_url?.replace("{+path}", "");
   const [directories, setDirectories] = useState([]);
+  const [startPolling, setStartPolling] = useState(false);
+  const [backendProjectDeploymentId, setBackendProjectDeploymentId] = useState(null);
 
   const dispatch = useDispatch();
+  const [isDeployed, setIsDeployed] = useState(false);
 
   useEffect(() => {
     const fetchDirectories = async () => {
@@ -237,195 +239,255 @@ function NewProjectForm({ project, onClose }) {
       })),
     };
 
-    dispatch(createProject(payload));
+    dispatch(createProject(payload))
+      .unwrap()
+      .then((createdProject) => {
+        setBackendProjectDeploymentId(createdProject.id || createdProject._id);
+        setStartPolling(true);
+      })
+      .catch(console.error);
   };
 
   return (
-    <div className="fixed inset-0 z-10 flex items-start justify-center overflow-y-auto bg-white py-10">
-      <form
-        onSubmit={handleSubmit}
-        className="w-full max-w-5xl overflow-hidden rounded-lg border border-gray-200 bg-white shadow-sm"
-      >
-        {/* Header */}
-        <header className="border-b border-gray-200 px-6 py-4">
-          <h1 className="text-xl font-semibold text-gray-900">New Project</h1>
-        </header>
+    <div className="fixed inset-0 z-10 flex items-center bg-white py-10 flex-col justify-center overflow-auto">
+      <div>
+        <form
+          onSubmit={handleSubmit}
+          className="w-full max-w-5xl overflow-hidden rounded-lg border border-gray-200 bg-white shadow-sm"
+        >
+          {/* Header */}
+          <header className="border-b border-gray-200 px-6 py-4">
+            <h1 className="text-xl font-semibold text-gray-900">New Project</h1>
+          </header>
 
-        {/* Repo Info */}
-        <section className="border-b border-gray-200 bg-gray-50 px-6 py-4">
-          <div className="flex items-center gap-2 text-sm text-gray-600">
-            <span className="flex h-4 w-4 items-center justify-center rounded-full bg-black">
-              <span className="text-xs text-white">●</span>
-            </span>
-            <span className="font-medium">
-              {project?.full_name ?? "Unknown repository"}
-            </span>
-            {project?.default_branch && (
-              <span className="rounded bg-orange-100 px-2 py-1 text-xs text-orange-600">
-                {project.default_branch}
+          {/* Repo Info */}
+          <section className="border-b border-gray-200 bg-gray-50 px-6 py-4">
+            <div className="flex items-center gap-2 text-sm text-gray-600">
+              <span className="flex h-4 w-4 items-center justify-center rounded-full bg-black">
+                <span className="text-xs text-white">●</span>
               </span>
-            )}
-          </div>
-        </section>
-
-        <div className="space-y-8 px-6 py-8">
-          <div className="grid gap-4 md:grid-cols-2">
-            {/* Project Name */}
-            <div>
-              <label
-                htmlFor="projectName"
-                className="mb-2 block text-sm font-medium text-gray-700"
-              >
-                Project Name
-              </label>
-              <input
-                id="projectName"
-                type="text"
-                value={form.projectName}
-                onChange={(e) => updateField("projectName", e.target.value)}
-                className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
+              <span className="font-medium">
+                {project?.full_name ?? "Unknown repository"}
+              </span>
+              {project?.default_branch && (
+                <span className="rounded bg-orange-100 px-2 py-1 text-xs text-orange-600">
+                  {project.default_branch}
+                </span>
+              )}
             </div>
+          </section>
 
-            {/* Framework Preset placeholder */}
-            <div>
-              <label className="mb-2 block text-sm font-medium text-gray-700">
-                Allowed Framework
-              </label>
-              <div className="grid grid-cols-5 gap-4 text-center text-xs text-gray-600">
-                {/* Vite */}
-                <div>
-                  <img
-                    src="https://vitejs.dev/logo.svg"
-                    alt="Vite"
-                    className="mx-auto h-6 w-6"
-                  />
-                  Vite
-                </div>
+          <div className="space-y-8 px-6 py-8">
+            <div className="grid gap-4 md:grid-cols-2">
+              {/* Project Name */}
+              <div>
+                <label
+                  htmlFor="projectName"
+                  className="mb-2 block text-sm font-medium text-gray-700"
+                >
+                  Project Name
+                </label>
+                <input
+                  id="projectName"
+                  type="text"
+                  value={form.projectName}
+                  onChange={(e) => updateField("projectName", e.target.value)}
+                  disabled={isDeployed}
+                  className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
 
-                {/* Laravel */}
-                <div>
-                  <img
-                    src="https://laravel.com/img/logomark.min.svg"
-                    alt="Laravel"
-                    className="mx-auto h-6 w-6"
-                  />
-                  Laravel
-                </div>
-
-                {/* Next.js */}
-                <div>
-                  <img
-                    src="https://assets.vercel.com/image/upload/v1662130559/nextjs/Icon_dark_background.png"
-                    alt="Next.js"
-                    className="mx-auto h-6 w-6"
-                  />
-                  Next.js
-                </div>
-
-                {/* Node.js */}
-                <div>
-                  <div className="bg-black rounded-full w-fit mx-auto p-1">
+              {/* Framework Preset placeholder */}
+              <div>
+                <label className="mb-2 block text-sm font-medium text-gray-700">
+                  Allowed Framework
+                </label>
+                <div className="grid grid-cols-5 gap-4 text-center text-xs text-gray-600">
+                  {/* Vite */}
+                  <div>
                     <img
-                      src="https://nodejs.org/static/images/logo.svg"
-                      alt="Node.js"
-                      className=" h-5 w-5"
+                      src="https://vitejs.dev/logo.svg"
+                      alt="Vite"
+                      className="mx-auto h-6 w-6"
                     />
+                    Vite
                   </div>
-                  Node.js
+
+                  {/* Laravel */}
+                  <div>
+                    <img
+                      src="https://laravel.com/img/logomark.min.svg"
+                      alt="Laravel"
+                      className="mx-auto h-6 w-6"
+                    />
+                    Laravel
+                  </div>
+
+                  {/* Next.js */}
+                  <div>
+                    <img
+                      src="https://assets.vercel.com/image/upload/v1662130559/nextjs/Icon_dark_background.png"
+                      alt="Next.js"
+                      className="mx-auto h-6 w-6"
+                    />
+                    Next.js
+                  </div>
+
+                  {/* Node.js */}
+                  <div>
+                    <div className="bg-black rounded-full w-fit mx-auto p-1">
+                      <img
+                        src="https://nodejs.org/static/images/logo.svg"
+                        alt="Node.js"
+                        className=" h-5 w-5"
+                      />
+                    </div>
+                    Node.js
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
 
-          {/* Environment Variables */}
-          <div>
-            <button
-              type="button"
-              onClick={() => toggle("envVarsOpen")}
-              className="mb-3 flex items-center gap-2 text-sm font-medium text-gray-700 hover:text-gray-900"
-            >
-              <ChevronDown
-                className={`h-4 w-4 transition-transform ${form.envVarsOpen ? "rotate-0" : "-rotate-90"
-                  }`}
-              />
-              Environment Variables
-            </button>
+            {/* Environment Variables */}
+            <div>
+              <button
+                type="button"
+                onClick={() => toggle("envVarsOpen")}
+                className="mb-3 flex items-center gap-2 text-sm font-medium text-gray-700 hover:text-gray-900"
+              >
+                <ChevronDown
+                  className={`h-4 w-4 transition-transform ${form.envVarsOpen ? "rotate-0" : "-rotate-90"
+                    }`}
+                />
+                Environment Variables
+              </button>
 
-            {form.envVarsOpen && (
-              <div className="space-y-4 pl-6">
-                <div className="grid grid-cols-2 gap-2 text-sm font-medium text-gray-700">
-                  <span>Key</span>
-                  <span>Value</span>
-                </div>
+              {form.envVarsOpen && (
+                <div className="space-y-4 pl-6">
+                  <div className="grid grid-cols-2 gap-2 text-sm font-medium text-gray-700">
+                    <span>Key</span>
+                    <span>Value</span>
+                  </div>
 
-                {form.envVars.map((envVar, index) => (
-                  <div
-                    key={index}
-                    className="grid grid-cols-2 items-start gap-2"
-                  >
-                    <input
-                      type="text"
-                      value={envVar.key}
-                      onChange={(e) =>
-                        updateEnvVar(index, "key", e.target.value)
-                      }
-                      className="rounded-md border border-gray-300 bg-gray-100 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                      placeholder="KEY"
-                    />
-                    <div className="flex gap-2">
+                  {form.envVars.map((envVar, index) => (
+                    <div
+                      key={index}
+                      className="grid grid-cols-2 items-start gap-2"
+                    >
                       <input
                         type="text"
-                        value={envVar.value}
+                        value={envVar.key}
                         onChange={(e) =>
-                          updateEnvVar(index, "value", e.target.value)
+                          updateEnvVar(index, "key", e.target.value)
                         }
-                        className="flex-1 rounded-md border border-gray-300 bg-gray-100 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                        placeholder="VALUE"
+                        disabled={isDeployed}
+                        className="rounded-md border border-gray-300 bg-gray-100 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        placeholder="KEY"
                       />
-                      <button
-                        type="button"
-                        onClick={() => removeEnvVar(index)}
-                        className="p-1 text-gray-500 hover:text-red-500"
-                        aria-label="Remove environment variable"
-                      >
-                        <X className="h-4 w-4" />
-                      </button>
+                      <div className="flex gap-2">
+                        <input
+                          type="text"
+                          value={envVar.value}
+                          onChange={(e) =>
+                            updateEnvVar(index, "value", e.target.value)
+                          }
+                          disabled={isDeployed}
+                          className="flex-1 rounded-md border border-gray-300 bg-gray-100 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                          placeholder="VALUE"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => removeEnvVar(index)}
+                          disabled={isDeployed}
+                          className="p-1 text-gray-500 hover:text-red-500"
+                          aria-label="Remove environment variable"
+                        >
+                          <X className="h-4 w-4" />
+                        </button>
+                      </div>
                     </div>
-                  </div>
-                ))}
+                  ))}
 
-                <button
-                  type="button"
-                  onClick={addEnvVar}
-                  className="mt-2 flex items-center gap-2 text-sm text-gray-600 hover:text-gray-800"
-                >
-                  <Plus className="h-4 w-4" /> Add More
-                </button>
+                  <button
+                    type="button"
+                    onClick={addEnvVar}
+                    disabled={isDeployed}
+                    className="mt-2 flex items-center gap-2 text-sm text-gray-600 hover:text-gray-800"
+                  >
+                    <Plus className="h-4 w-4" /> Add More
+                  </button>
+                </div>
+              )}
+            </div>
 
-                {/* Removed textarea and paste tip */}
-              </div>
-            )}
+            {/* Deploy button */}
+            <div className="flex flex-col-reverse sm:flex-row sm:justify-between sm:items-center gap-4 mt-8">
+              <button
+                type="button"
+                onClick={onClose}
+                className="w-[40rem] rounded-md bg-black/10 text-black px-6 py-3 text-sm font-medium  transition-colors hover:bg-black/20 cursor-pointer"
+              >
+                Cancel
+              </button>
+              <button
+                type="submit"
+                disabled={isDeployed}
+                className="w-full sm:w-[40rem] rounded-md bg-black px-6 py-3 text-sm font-medium text-white transition-colors hover:bg-gray-800 cursor-pointer"
+              >
+                Deploy
+              </button>
+            </div>
           </div>
+        </form>
+      </div>
+      {project?.id && (
+        <ProjectLogs
+          deploymentId={backendProjectDeploymentId}
+          startPolling={startPolling}
+          onLogsDetected={() => setIsDeployed(true)}
+        />
+      )}
 
-          {/* Deploy button */}
-          <div className="flex flex-col-reverse sm:flex-row sm:justify-between sm:items-center gap-4 mt-8">
-            <button
-              type="button"
-              onClick={onClose}
-              className="w-[40rem] rounded-md bg-black/10 text-black px-6 py-3 text-sm font-medium  transition-colors hover:bg-black/20 cursor-pointer"
-            >
-              Cancel
-            </button>
-            <button
-              type="submit"
-              className="w-full sm:w-[40rem] rounded-md bg-black px-6 py-3 text-sm font-medium text-white transition-colors hover:bg-gray-800 cursor-pointer"
-            >
-              Deploy
-            </button>
-          </div>
-        </div>
-      </form>
+
     </div>
   );
 }
+function ProjectLogs({ deploymentId, startPolling = false, onLogsDetected }) {
+  const dispatch = useDispatch();
+  const { logs = [], loading, error } = useSelector((state) => state.project);
+  console.log(logs);
+
+
+  useEffect(() => {
+    if (!deploymentId || !startPolling) return;
+
+    dispatch(getAllLogs(deploymentId));
+
+    const interval = setInterval(() => {
+      dispatch(getAllLogs(deploymentId));
+    }, 5000);
+
+    return () => clearInterval(interval);
+  }, [dispatch, deploymentId, startPolling]);
+
+  useEffect(() => {
+    if (logs.length > 0) {
+      onLogsDetected?.();
+    }
+  }, [logs, onLogsDetected]);
+
+  return (
+    <div className={`mt-8 w-full max-w-5xl rounded-lg border border-gray-300 bg-white shadow-md hidden ${startPolling && 'block'}`}>
+      <div className="border-b border-gray-200 px-6 py-4">
+        <h2 className="text-lg font-semibold text-gray-800">Build Logs</h2>
+      </div>
+      <div className="p-6 text-sm h-60 overflow-y-auto space-y-1 bg-gray-50">
+        {loading && <p className="text-gray-500">Loading logs...</p>}
+        {error && <p className="text-red-500">{error}</p>}
+        {logs.map((log, index) => (
+          <div key={index} className="text-gray-700">• {log.message}</div>
+        ))}
+      </div>
+    </div>
+  );
+};
