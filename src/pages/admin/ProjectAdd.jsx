@@ -239,12 +239,10 @@ function NewProjectForm({ project, onClose }) {
       })),
     };
 
-    dispatch(createProject(payload))
-      .unwrap()
-      .then((createdProject) => {
-        setBackendProjectDeploymentId(createdProject.id || createdProject._id);
-        setStartPolling(true);
-      })
+    dispatch(createProject(payload))?.unwrap().then((createdProject) => {
+      setBackendProjectDeploymentId(createdProject.id || createdProject._id);
+      setStartPolling(true);
+    })
       .catch(console.error);
   };
 
@@ -455,7 +453,7 @@ function NewProjectForm({ project, onClose }) {
 function ProjectLogs({ deploymentId, startPolling = false, onLogsDetected }) {
   const dispatch = useDispatch();
   const { logs = [], loading, error } = useSelector((state) => state.project);
-  console.log(logs);
+  console.log(deploymentId);
 
 
   useEffect(() => {
