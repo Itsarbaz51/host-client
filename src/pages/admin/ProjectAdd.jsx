@@ -1,17 +1,18 @@
-import { useEffect, useState } from "react";
-import {
-  Search,
-  X,
-  Github,
-  ChevronDown, Plus
-} from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
+import { Search, X, Github, ChevronDown, Plus } from "lucide-react";
 import { useDispatch, useSelector } from "react-redux";
-import { createProject, getAllLogs, getAllRepos } from "../../redux/slices/projectSlice";
+import {
+  createProject,
+  getAllLogs,
+  getAllRepos,
+} from "../../redux/slices/projectSlice";
+import { useNavigate } from "react-router-dom";
 
-const ProjectAdd = ({ onClose }) => {
+const ProjectAdd = () => {
   const [selectedAccount, setSelectedAccount] = useState("Itsarbaz51");
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedRepo, setSelectedRepo] = useState(null);
+  const [showProjectForm, setShowProjectForm] = useState(false);
 
   const dispatch = useDispatch();
   const { project: repos } = useSelector((state) => state.project);
@@ -23,38 +24,42 @@ const ProjectAdd = ({ onClose }) => {
     }
   }, [dispatch, userData]);
 
-
   const handleImport = (repo) => {
     setSelectedRepo(repo);
+    setShowProjectForm(true);
   };
 
-  const filteredRepos =
-    Array.isArray(repos?.data)
-      ? repos.data.filter((repo) =>
+  const filteredRepos = Array.isArray(repos?.data)
+    ? repos.data.filter((repo) =>
         repo?.name?.toLowerCase().includes(searchQuery.toLowerCase())
       )
-      : [];
+    : [];
 
   return (
-    <div
-      className="fixed inset-0 z-50 backdrop-blur-md bg-white/90 overflow-y-auto"
-      onClick={(e) => e.target === e.currentTarget && onClose()}
-    >
-      {/* Animated background */}
+    <div className="fixed inset-0 z-50 backdrop-blur-md bg-white/90 overflow-y-auto">
       <div className="fixed inset-0 pointer-events-none z-0">
         <div className="absolute top-[10%] left-[10%] w-24 h-24 bg-black/10 rounded-full animate-pulse"></div>
         <div className="absolute top-[20%] right-[10%] w-36 h-36 bg-black/5 rounded-full animate-pulse delay-1000"></div>
         <div className="absolute bottom-[10%] left-[20%] w-20 h-20 bg-black/10 rounded-full animate-pulse delay-2000"></div>
       </div>
 
-      {filteredRepos.length > 0 ? (
+      {showProjectForm && selectedRepo ? (
+        <NewProjectForm
+          project={selectedRepo}
+          onClose={() => {
+            setSelectedRepo(null);
+            setShowProjectForm(false);
+          }}
+        />
+      ) : filteredRepos.length > 0 ? (
         <div className="relative z-10 max-w-7xl mx-auto px-4 py-16">
           <div className="text-center mb-12">
             <h1 className="text-5xl md:text-6xl font-extrabold mb-4 drop-shadow-lg">
               Let's build something new.
             </h1>
             <p className="text-xl max-w-2xl mx-auto">
-              Deploy a new project, import an existing Git repository, or get started with one of our templates.
+              Deploy a new project, import an existing Git repository, or get
+              started with one of our templates.
             </p>
           </div>
 
@@ -63,13 +68,6 @@ const ProjectAdd = ({ onClose }) => {
               <div className="w-1.5 h-5 bg-gradient-to-b from-indigo-500 to-purple-600 rounded-full mr-3" />
               Import Git Repository
             </h2>
-
-            <button
-              onClick={onClose}
-              className="absolute top-4 right-4 text-gray-500 hover:text-gray-800 bg-black/10 p-1 rounded-full hover:bg-black/20 transition"
-            >
-              <X size={20} />
-            </button>
 
             <div className="flex sm:flex-row flex-col gap-6 mb-4 px-8 ">
               <div className="w-64">
@@ -105,7 +103,9 @@ const ProjectAdd = ({ onClose }) => {
                       {repo.name?.[0] || "R"}
                     </div>
                     <div>
-                      <h3 className="font-semibold text-gray-800">{repo.name}</h3>
+                      <h3 className="font-semibold text-gray-800">
+                        {repo.name}
+                      </h3>
                       <p className="text-sm text-gray-600">
                         Updated {new Date(repo.pushed_at).toLocaleDateString()}
                       </p>
@@ -121,21 +121,16 @@ const ProjectAdd = ({ onClose }) => {
               ))}
             </div>
           </div>
-          {selectedRepo && <NewProjectForm project={selectedRepo} onClose={onClose} />}
         </div>
       ) : (
-        // GitHub not connected fallback
         <div className="flex items-center justify-center h-full z-10 relative">
           <div className="bg-white rounded-2xl shadow-xl w-full max-w-md p-6 relative">
-            <button
-              onClick={onClose}
-              className="absolute top-4 right-4 text-gray-500 hover:text-gray-800 bg-black/10 p-1 rounded-full hover:bg-black/20 transition"
-            >
-              <X size={20} />
-            </button>
-            <h2 className="text-2xl font-bold mb-4 text-center">Import Git Repository</h2>
+            <h2 className="text-2xl font-bold mb-4 text-center">
+              Import Git Repository
+            </h2>
             <p className="text-sm text-gray-600 mb-6 text-center">
-              Select a Git provider to import an existing project from a Git Repository.
+              Select a Git provider to import an existing project from a Git
+              Repository.
             </p>
             <button
               type="button"
@@ -144,7 +139,9 @@ const ProjectAdd = ({ onClose }) => {
                   client_id: import.meta.env.VITE_GITHUB_CLIENT_ID,
                   redirect_uri: `${window.location.origin}/github/callback`,
                   scope: "user:email repo",
-                  state: crypto.randomUUID ? crypto.randomUUID() : Math.random().toString(36).substring(2),
+                  state: crypto.randomUUID
+                    ? crypto.randomUUID()
+                    : Math.random().toString(36).substring(2),
                 });
                 window.location.href = `https://github.com/login/oauth/authorize?${params.toString()}`;
               }}
@@ -158,20 +155,18 @@ const ProjectAdd = ({ onClose }) => {
           </div>
         </div>
       )}
-
-      {/* Show the selected project */}
     </div>
   );
 };
 
 export default ProjectAdd;
 
-
 function NewProjectForm({ project, onClose }) {
   const GITHUB_API = project?.contents_url?.replace("{+path}", "");
   const [directories, setDirectories] = useState([]);
   const [startPolling, setStartPolling] = useState(false);
-  const [backendProjectDeploymentId, setBackendProjectDeploymentId] = useState(null);
+  const [backendProjectDeploymentId, setBackendProjectDeploymentId] =
+    useState(null);
 
   const dispatch = useDispatch();
   const [isDeployed, setIsDeployed] = useState(false);
@@ -239,10 +234,13 @@ function NewProjectForm({ project, onClose }) {
       })),
     };
 
-    dispatch(createProject(payload))?.unwrap().then((createdProject) => {
-      setBackendProjectDeploymentId(createdProject.id || createdProject._id);
-      setStartPolling(true);
-    })
+    dispatch(createProject(payload))
+      .then((data) => {
+        const deploymentId = data?.data?.id || data?.data?._id;
+        console.log(deploymentId);
+        setBackendProjectDeploymentId(deploymentId);
+        setStartPolling(true);
+      })
       .catch(console.error);
   };
 
@@ -354,8 +352,9 @@ function NewProjectForm({ project, onClose }) {
                 className="mb-3 flex items-center gap-2 text-sm font-medium text-gray-700 hover:text-gray-900"
               >
                 <ChevronDown
-                  className={`h-4 w-4 transition-transform ${form.envVarsOpen ? "rotate-0" : "-rotate-90"
-                    }`}
+                  className={`h-4 w-4 transition-transform ${
+                    form.envVarsOpen ? "rotate-0" : "-rotate-90"
+                  }`}
                 />
                 Environment Variables
               </button>
@@ -429,7 +428,7 @@ function NewProjectForm({ project, onClose }) {
               </button>
               <button
                 type="submit"
-                disabled={isDeployed}
+                // disabled={isDeployed}
                 className="w-full sm:w-[40rem] rounded-md bg-black px-6 py-3 text-sm font-medium text-white transition-colors hover:bg-gray-800 cursor-pointer"
               >
                 Deploy
@@ -438,54 +437,85 @@ function NewProjectForm({ project, onClose }) {
           </div>
         </form>
       </div>
-      {project?.id && (
-        <ProjectLogs
-          deploymentId={backendProjectDeploymentId}
-          startPolling={startPolling}
-          onLogsDetected={() => setIsDeployed(true)}
-        />
-      )}
-
-
+      <ProjectLogs
+        deploymentId={backendProjectDeploymentId}
+        startPolling={true}
+        onLogsDetected={() => setIsDeployed(true)}
+      />
     </div>
   );
 }
+
 function ProjectLogs({ deploymentId, startPolling = false, onLogsDetected }) {
   const dispatch = useDispatch();
-  const { logs = [], loading, error } = useSelector((state) => state.project);
-  console.log(deploymentId);
+  const navigate = useNavigate();
 
+  // ✅ Safe access to logs, loading, and error with fallbacks
+  const {
+    data: logs = [],
+    loading = false,
+    error = null,
+  } = useSelector((state) => {
+    const project = state?.project?.project ?? {};
+    return {
+      data: Array.isArray(project.data) ? project.data : [],
+      loading: project.loading ?? false,
+      error: project.error ?? null,
+    };
+  });
+
+  const hasLogs = useMemo(() => logs.length > 0, [logs]);
 
   useEffect(() => {
     if (!deploymentId || !startPolling) return;
 
     dispatch(getAllLogs(deploymentId));
 
-    const interval = setInterval(() => {
+    const intervalId = setInterval(() => {
       dispatch(getAllLogs(deploymentId));
     }, 5000);
 
-    return () => clearInterval(interval);
+    return () => clearInterval(intervalId);
   }, [dispatch, deploymentId, startPolling]);
 
   useEffect(() => {
-    if (logs.length > 0) {
-      onLogsDetected?.();
+    if (hasLogs) {
+      onLogsDetected?.(); // Notify parent
+
+      const found = logs.find((log) =>
+        log?.log?.includes("🎉 Upload complete")
+      );
+
+      if (found) {
+        navigate(`/project/${deploymentId}`); // Redirect on upload complete
+      }
     }
-  }, [logs, onLogsDetected]);
+  }, [hasLogs, logs, deploymentId, onLogsDetected, navigate]);
+
+  if (!startPolling) return null;
 
   return (
-    <div className={`mt-8 w-full max-w-5xl rounded-lg border border-gray-300 bg-white shadow-md hidden ${startPolling && 'block'}`}>
-      <div className="border-b border-gray-200 px-6 py-4">
+    <div className="mt-8 w-full max-w-5xl rounded-lg border border-gray-300 bg-white shadow-md">
+      <header className="border-b border-gray-200 px-6 py-4 bg-white">
         <h2 className="text-lg font-semibold text-gray-800">Build Logs</h2>
-      </div>
-      <div className="p-6 text-sm h-60 overflow-y-auto space-y-1 bg-gray-50">
+      </header>
+
+      <div className="p-6 h-60 overflow-y-auto text-sm bg-gray-50 space-y-2">
         {loading && <p className="text-gray-500">Loading logs...</p>}
         {error && <p className="text-red-500">{error}</p>}
+        {!loading && logs.length === 0 && (
+          <p className="text-gray-500 italic">Waiting for logs...</p>
+        )}
+
         {logs.map((log, index) => (
-          <div key={index} className="text-gray-700">• {log.message}</div>
+          <pre
+            key={index}
+            className="text-gray-800 font-mono bg-white rounded px-2 py-1 shadow-sm border border-gray-200"
+          >
+            {log?.log ?? ""}
+          </pre>
         ))}
       </div>
     </div>
   );
-};
+}

@@ -65,20 +65,23 @@ export const createProject = (projectData) => async (dispatch) => {
         withCredentials: true,
       }
     );
-
+    console.log("slice", data);
     dispatch(projectSuccess(data));
     toast.success("Project created successfully!");
+
+    return data;
   } catch (err) {
     const msg = handleError(err);
     dispatch(projectFail(msg));
     toast.error(msg);
+    throw err;
   }
 };
 
 export const getAllLogs = (deploymentId) => async (dispatch) => {
   dispatch(projectRequest());
   try {
-    const { data } = await axios.get(`${baseURL}/get-logs`, deploymentId, {
+    const { data } = await axios.get(`${baseURL}/get-logs/${deploymentId}`, {
       withCredentials: true,
     });
 
