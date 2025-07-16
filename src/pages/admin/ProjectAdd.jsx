@@ -167,6 +167,8 @@ function NewProjectForm({ project, onClose }) {
   const [startPolling, setStartPolling] = useState(false);
   const [backendProjectDeploymentId, setBackendProjectDeploymentId] =
     useState(null);
+  const [backendProjectId, setBackendProjectId] = useState(null);
+  const [isDeploying, setIsDeploying] = useState(false);
 
   const dispatch = useDispatch();
   const [isDeployed, setIsDeployed] = useState(false);
@@ -222,6 +224,7 @@ function NewProjectForm({ project, onClose }) {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    setIsDeploying(true); // 👈 Show loader
 
     const filteredVars = form.envVars.filter(({ key }) => key.trim() !== "");
 
@@ -237,11 +240,15 @@ function NewProjectForm({ project, onClose }) {
     dispatch(createProject(payload))
       .then((data) => {
         const deploymentId = data?.data?.id || data?.data?._id;
-        console.log(deploymentId);
         setBackendProjectDeploymentId(deploymentId);
+        const projectId = data?.data?.projectId || data?.data?.projectId;
+        setBackendProjectId(projectId);
         setStartPolling(true);
       })
-      .catch(console.error);
+      .catch((err) => {
+        console.error(err);
+        setIsDeploying(false); // ❌ On error, stop loader
+      });
   };
 
   return (
@@ -428,25 +435,58 @@ function NewProjectForm({ project, onClose }) {
               </button>
               <button
                 type="submit"
-                // disabled={isDeployed}
-                className="w-full sm:w-[40rem] rounded-md bg-black px-6 py-3 text-sm font-medium text-white transition-colors hover:bg-gray-800 cursor-pointer"
+                className="w-full sm:w-[40rem] rounded-md bg-black px-6 py-3 text-sm font-medium text-white transition-colors hover:bg-gray-800 cursor-pointer flex items-center justify-center gap-2"
+                disabled={isDeploying}
               >
-                Deploy
+                {isDeploying && (
+                  <svg
+                    className="animate-spin h-4 w-4 text-white"
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                  >
+                    <circle
+                      className="opacity-25"
+                      cx="12"
+                      cy="12"
+                      r="10"
+                      stroke="currentColor"
+                      strokeWidth="4"
+                    ></circle>
+                    <path
+                      className="opacity-75"
+                      fill="currentColor"
+                      d="M4 12a8 8 0 018-8v8H4z"
+                    ></path>
+                  </svg>
+                )}
+                {isDeploying ? "Deploying..." : "Deploy"}
               </button>
             </div>
           </div>
         </form>
       </div>
-      <ProjectLogs
-        deploymentId={backendProjectDeploymentId}
-        startPolling={true}
-        onLogsDetected={() => setIsDeployed(true)}
-      />
+      {backendProjectDeploymentId && (
+        <ProjectLogs
+          deploymentId={backendProjectDeploymentId}
+          ProjectId={backendProjectId}
+          startPolling={true}
+          onLogsDetected={() => {
+            setIsDeployed(true);
+            setIsDeploying(false); // ✅ Hide loader when logs start showing
+          }}
+        />
+      )}
     </div>
   );
 }
 
-function ProjectLogs({ deploymentId, startPolling = false, onLogsDetected }) {
+function ProjectLogs({
+  deploymentId,
+  ProjectId,
+  startPolling = false,
+  onLogsDetected,
+}) {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
@@ -487,10 +527,10 @@ function ProjectLogs({ deploymentId, startPolling = false, onLogsDetected }) {
       );
 
       if (found) {
-        navigate(`/project/${deploymentId}`); // Redirect on upload complete
+        navigate(`project/${ProjectId}`); // Redirect on upload complete
       }
     }
-  }, [hasLogs, logs, deploymentId, onLogsDetected, navigate]);
+  }, [hasLogs, logs, onLogsDetected, ProjectId, navigate]);
 
   if (!startPolling) return null;
 

@@ -67,8 +67,6 @@ export const createProject = (projectData) => async (dispatch) => {
     );
     console.log("slice", data);
     dispatch(projectSuccess(data));
-    toast.success("Project created successfully!");
-
     return data;
   } catch (err) {
     const msg = handleError(err);
@@ -89,5 +87,18 @@ export const getAllLogs = (deploymentId) => async (dispatch) => {
   } catch (err) {
     const msg = handleError(err);
     dispatch(projectFail(msg));
+  }
+};
+
+export const getProjectById = (id) => async (dispatch) => {
+  console.log("Fetching project with ID:", id);
+  dispatch(projectRequest());
+  try {
+    const { data } = await axios.get(`${baseURL}/projects/get-project/${id}`);
+    console.log("Fetched project:", data);
+    dispatch(projectSuccess(data));
+  } catch (err) {
+    console.error("Error fetching project:", err);
+    dispatch(projectFail(handleError(err)));
   }
 };

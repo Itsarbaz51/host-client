@@ -37,13 +37,13 @@ export const router = createBrowserRouter(
 
       {/* Protected dashboard layout */}
       <Route element={<ProtectedRoute />}>
-        <Route element={<DashboardLayout />}>
-          <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/dashboard" element={<DashboardLayout />}>
+          <Route index element={<Dashboard />} />
           <Route path="deployments" element={<DeploymentPage />} />
           <Route path="domains" element={<DomainPage />} />
           <Route path="storage" element={<StoragePage />} />
           <Route path="account-setting" element={<AccountSetting />} />
-          <Route path="project-detail/:id" element={<ProjectDetail />} />
+          <Route path="project/:id" element={<ProjectDetail />} />
         </Route>
       </Route>
     </>
