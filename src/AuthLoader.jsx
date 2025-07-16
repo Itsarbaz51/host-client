@@ -12,7 +12,7 @@ function AuthLoader() {
   useEffect(() => {
     const fetchAuth = async () => {
       await dispatch(checkAuth());
-      setAuthChecked(true); // ✅ auth check ho gaya
+      setAuthChecked(true);
     };
     fetchAuth();
   }, [dispatch]);
