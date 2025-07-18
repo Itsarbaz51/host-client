@@ -7,7 +7,8 @@ axios.defaults.withCredentials = true;
 const baseURL = import.meta.env.VITE_BASE_URL || "http://localhost:5000/api/v1";
 
 const initialState = {
-  project: null,
+  project: [],
+  projectRepos: [],
   isLoading: false,
   error: null,
 };
@@ -25,6 +26,11 @@ const projectSlice = createSlice({
       state.project = action.payload;
       state.error = null;
     },
+    projectReposSuccess: (state, action) => {
+      state.isLoading = false;
+      state.projectRepos = action.payload;
+      state.error = null;
+    },
     projectFail: (state, action) => {
       state.isLoading = false;
       state.error = action.payload;
@@ -32,22 +38,20 @@ const projectSlice = createSlice({
   },
 });
 
-export const { projectRequest, projectSuccess, projectFail } =
+export const { projectRequest, projectSuccess, projectReposSuccess, projectFail } =
   projectSlice.actions;
 export default projectSlice.reducer;
 
 const handleError = (err) =>
-  err.response?.data?.message || err.message || "Something went wrong";
+  err?.response?.data?.message || err?.message || "Something went wrong";
 
 // ==== Thunks ====
 
 export const getAllRepos = () => async (dispatch) => {
   dispatch(projectRequest());
   try {
-    const { data } = await axios.get(`${baseURL}/projects/repos`, {
-      withCredentials: true,
-    });
-    dispatch(projectSuccess(data));
+    const { data } = await axios.get(`${baseURL}/projects/repos`);
+    dispatch(projectReposSuccess(data));
   } catch (err) {
     const msg = handleError(err);
     dispatch(projectFail(msg));
@@ -58,16 +62,9 @@ export const getAllRepos = () => async (dispatch) => {
 export const createProject = (projectData) => async (dispatch) => {
   dispatch(projectRequest());
   try {
-    const { data } = await axios.post(
-      `${baseURL}/projects/create`,
-      projectData,
-      {
-        withCredentials: true,
-      }
-    );
-    console.log("slice", data);
+    const { data } = await axios.post(`${baseURL}/projects/create`, projectData);
     dispatch(projectSuccess(data));
-    return data;
+    // return data;
   } catch (err) {
     const msg = handleError(err);
     dispatch(projectFail(msg));
@@ -79,26 +76,35 @@ export const createProject = (projectData) => async (dispatch) => {
 export const getAllLogs = (deploymentId) => async (dispatch) => {
   dispatch(projectRequest());
   try {
-    const { data } = await axios.get(`${baseURL}/get-logs/${deploymentId}`, {
-      withCredentials: true,
-    });
-
+    const { data } = await axios.get(`${baseURL}/get-logs/${deploymentId}`);
     dispatch(projectSuccess(data));
   } catch (err) {
     const msg = handleError(err);
     dispatch(projectFail(msg));
+    toast.error(msg);
   }
 };
 
 export const getProjectById = (id) => async (dispatch) => {
-  console.log("Fetching project with ID:", id);
   dispatch(projectRequest());
   try {
     const { data } = await axios.get(`${baseURL}/projects/get-project/${id}`);
-    console.log("Fetched project:", data);
     dispatch(projectSuccess(data));
   } catch (err) {
-    console.error("Error fetching project:", err);
-    dispatch(projectFail(handleError(err)));
+    const msg = handleError(err);
+    dispatch(projectFail(msg));
+    toast.error(msg);
+  }
+};
+
+export const getAllProjects = () => async (dispatch) => {
+  dispatch(projectRequest());
+  try {
+    const { data } = await axios.get(`${baseURL}/projects/get-projects`);
+    dispatch(projectSuccess(data || []));
+  } catch (err) {
+    const msg = handleError(err);
+    dispatch(projectFail(msg));
+    toast.error(msg);
   }
 };

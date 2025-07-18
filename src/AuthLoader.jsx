@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { RouterProvider } from "react-router-dom";
 import { checkAuth } from "./redux/slices/authSlice";
@@ -18,7 +18,6 @@ function AuthLoader() {
   }, [dispatch]);
 
   if (!authChecked || isLoading) {
-    // ✅ Show loader until checkAuth finishes
     return (
       <div className="flex items-center justify-center h-screen">
         <svg

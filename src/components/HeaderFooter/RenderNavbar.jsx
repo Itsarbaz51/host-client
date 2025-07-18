@@ -1,9 +1,7 @@
-import { use, useEffect, useState } from "react";
+import { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Menu, X, AtSign, Image, User } from "lucide-react";
-import { useDispatch, useSelector } from "react-redux";
-import Cookies from "js-cookie";
-import { checkAuth } from "../../redux/slices/authSlice";
+import { useSelector } from "react-redux";
 
 const navItems = [
   {

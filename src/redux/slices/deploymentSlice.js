@@ -6,7 +6,7 @@ axios.defaults.withCredentials = true;
 const baseURL = import.meta.env.VITE_BASE_URL || "http://localhost:5000/api/v1";
 
 const initialState = {
-    deployment: null,
+    deployment: [],
     isLoading: false,
     error: null,
 };
@@ -39,9 +39,21 @@ const handleError = (err) =>
     err.response?.data?.message || err.message || "Something went wrong";
 
 
+export const getAllDeployments = () => async (dispatch) => {
+    dispatch(deploymentRequest());
+    try {
+        const { data } = await axios.get(`${baseURL}/deployments`, {
+            withCredentials: true,
+        });
+        dispatch(deploymentSuccess(data));
+    } catch (err) {
+        const msg = handleError(err);
+        dispatch(deploymentFail(msg));
+    }
+};
+
+
 export const getSingleDeployment = (deploymentId) => async (dispatch) => {
-    console.log(deploymentId);
-    
     dispatch(deploymentRequest());
     try {
         const { data } = await axios.get(`${baseURL}/${deploymentId}`, {
@@ -54,3 +66,5 @@ export const getSingleDeployment = (deploymentId) => async (dispatch) => {
         dispatch(deploymentFail(msg));
     }
 };
+
+
